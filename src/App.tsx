@@ -46,12 +46,83 @@ import {
   UserCog,
   Undo2,
   Languages,
-  HelpCircle
+  HelpCircle,
+  BookOpen,
+  Quote,
+  Music,
+  Star,
+  Share2,
+  Download
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState } from 'react';
+import { QRCodeCanvas } from 'qrcode.react';
 
 // --- Shared Components ---
+
+const getLiturgicalData = (date: Date) => {
+  const dayNames = ["Chúa Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+  const currentDayName = dayNames[date.getDay()];
+  const formattedDateString = `${currentDayName}, ${date.getDate()} Tháng ${date.getMonth() + 1}`;
+
+  // Target year is 2026 for this prototype context (as seen in user metadata)
+  // Easter 2026 is April 5th.
+  const year = date.getFullYear();
+  const month = date.getMonth(); // 0-indexed
+  const day = date.getDate();
+
+  // Simplified Liturgical Logic for the current period (May 2026)
+  if (year === 2026 && month === 4) { // May 2026
+    let week = "VI";
+    if (day <= 2) week = "IV";
+    else if (day <= 9) week = "V";
+    else if (day <= 16) week = "VI";
+    else if (day <= 23) week = "VII";
+    else week = "VIII";
+
+    return {
+      dateString: formattedDateString,
+      season: `Tuần ${week} Phục Sinh`,
+      feast: day === 13 ? "Đức Mẹ Fatima. Lễ Nhớ." : day === 14 ? "Thánh Matthias, Tông đồ. Lễ Kính." : "Ngày tuần trong Mùa Phục Sinh",
+      readings: [
+        { label: "Bài Đọc I", text: day === 13 ? "Cv 17, 15.22—18,1" : day === 14 ? "Cv 1,15-17.20-26" : "Cv Lời Chúa", icon: BookOpen, color: "bg-blue-50", iconColor: "text-blue-500" },
+        { label: "Đáp Ca", text: day === 13 ? "Tv 148, 1-2.11-12.13.14" : day === 14 ? "Tv 112,1-2.3-4.5-6.7-8" : "Tv Lời Chúa", icon: Music, color: "bg-indigo-50", iconColor: "text-indigo-500" },
+        { label: "Tin Mừng", text: day === 13 ? "Ga 16, 12-15" : day === 14 ? "Ga 15,9-17" : "Ga Lời Chúa", icon: Quote, color: "bg-red-50", iconColor: "text-red-500" }
+      ]
+    };
+  }
+
+  return {
+    dateString: formattedDateString,
+    season: "Mùa Thường Niên",
+    feast: "Ngày trong tuần",
+    readings: [
+      { label: "Bài Đọc I", text: "Lời Chúa hằng ngày", icon: BookOpen, color: "bg-blue-50", iconColor: "text-blue-500" },
+      { label: "Đáp Ca", text: "Thánh vịnh đáp ca", icon: Music, color: "bg-indigo-50", iconColor: "text-indigo-500" },
+      { label: "Tin Mừng", text: "Tin Mừng theo ngày", icon: Quote, color: "bg-red-50", iconColor: "text-red-500" }
+    ]
+  };
+};
+
+const AppLogo = ({ className = "w-10 h-10", iconClassName = "w-6 h-6", isWhite = false }: { className?: string, iconClassName?: string, isWhite?: boolean }) => {
+  return (
+    <div className={`rounded-2xl flex items-center justify-center shadow-lg transition-all ${isWhite ? 'bg-white shadow-black/5' : 'bg-primary shadow-primary/20'} ${className}`}>
+      <svg 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        className={iconClassName}
+        stroke="currentColor" 
+        strokeWidth="2.5" 
+        strokeLinecap="round" 
+        strokeLinejoin="round"
+      >
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" className={isWhite ? 'text-primary' : 'text-white'} />
+        <path d="M12 8v8" className={isWhite ? 'text-primary' : 'text-white/80'} />
+        <path d="M9 11h6" className={isWhite ? 'text-primary' : 'text-white/80'} />
+      </svg>
+    </div>
+  );
+};
 
 const BottomNav = ({ activeTab, onTabChange }: { activeTab: string, onTabChange: (tab: string) => void }) => {
   const tabs = [
@@ -94,6 +165,74 @@ const BottomNav = ({ activeTab, onTabChange }: { activeTab: string, onTabChange:
   );
 };
 
+const DailyWordSection = () => {
+  // Mock data for the Gospel of the day
+  // In a real app, this would come from an API or a calculated liturgical calendar
+  const dailyData = {
+    verse: "Ta là con đường, là sự thật và là sự sống. Không ai đến được với Cha mà không qua Thầy.",
+    ref: "Ga 14, 6",
+    isObligation: true,
+    feastName: "Lễ Kính Thánh Tâm Chúa Giêsu",
+    celebrationColor: "text-red-600 bg-red-50 border-red-100"
+  };
+
+  return (
+    <div className="bg-[#FFF9F2] rounded-[32px] p-6 border border-orange-50 relative overflow-hidden group">
+      {/* Decorative Background Elements */}
+      <div className="absolute -top-10 -right-10 w-32 h-32 bg-orange-100/30 rounded-full blur-2xl group-hover:bg-orange-200/40 transition-colors" />
+      <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-primary/5 rounded-full blur-xl" />
+
+      <div className="relative z-10 flex flex-col gap-4">
+        <div className="flex justify-between items-start">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-xl bg-orange-100 flex items-center justify-center text-orange-600 shadow-sm">
+              <BookOpen className="w-4 h-4" />
+            </div>
+            <p className="text-[10px] font-black text-orange-400 uppercase tracking-[0.2em] font-display">Lời Chúa hôm nay</p>
+          </div>
+          
+          {dailyData.isObligation && (
+            <div className={`px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-wider flex items-center gap-1.5 shadow-sm ${dailyData.celebrationColor}`}>
+              <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
+              Lễ kính buộc
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-3">
+          {dailyData.feastName && (
+            <h4 className="text-xs font-black text-orange-900 leading-tight">
+              {dailyData.feastName}
+            </h4>
+          )}
+          
+          <div className="relative pt-2">
+            <Quote className="absolute -top-1 -left-2 w-8 h-8 text-orange-100 opacity-60" />
+            <p className="text-[15px] font-display font-medium text-gray-800 leading-relaxed italic relative z-10 pl-2">
+              "{dailyData.verse}"
+            </p>
+            <div className="flex justify-end mt-2">
+              <span className="text-[10px] font-black text-primary px-3 py-1 bg-white rounded-full shadow-sm border border-orange-50">
+                — {dailyData.ref}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <button className="flex items-center gap-2 text-[11px] font-black text-orange-600 uppercase tracking-widest mt-1 group-hover:translate-x-1 transition-transform">
+          Suy niệm thêm
+          <ArrowRight className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      {/* Decorative Icon */}
+      <div className="absolute right-4 bottom-4 opacity-[0.03] pointer-events-none">
+        <BookOpen className="w-24 h-24 text-primary" />
+      </div>
+    </div>
+  );
+};
+
 // --- Screens ---
 
 const LaymanHomeScreen = ({ onPriestClick, onLoginClick }: { onPriestClick: () => void, onLoginClick: () => void }) => {
@@ -101,11 +240,9 @@ const LaymanHomeScreen = ({ onPriestClick, onLoginClick }: { onPriestClick: () =
     <div className="flex flex-col gap-6 p-4 pb-32 overflow-x-hidden">
       <header className="flex justify-between items-center bg-white/90 backdrop-blur-md sticky top-0 z-40 -mx-4 px-4 py-3 border-b border-gray-50 shadow-sm">
         <div className="flex items-center gap-3">
-           <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-             <Home className="w-5 h-5 text-white" />
-           </div>
+           <AppLogo className="w-10 h-10" iconClassName="w-5.5 h-5.5" />
            <div>
-              <h1 className="text-lg font-display font-extrabold text-primary leading-none">Thông tin linh mục</h1>
+              <h1 className="text-lg font-display font-extrabold text-primary leading-none uppercase tracking-tighter">Thông tin linh mục</h1>
            </div>
         </div>
         <button 
@@ -151,6 +288,8 @@ const LaymanHomeScreen = ({ onPriestClick, onLoginClick }: { onPriestClick: () =
             <Phone className="w-24 h-24 text-red-900" />
          </div>
       </div>
+
+      <DailyWordSection />
 
       <section>
          <div className="flex justify-between items-center mb-4 px-1">
@@ -253,9 +392,7 @@ const LoginScreen = ({ onLogin, onBack }: { onLogin: () => void, onBack: () => v
     <div className="flex flex-col h-full bg-surface p-6 pt-8 overflow-hidden">
       {/* Icon & Title */}
       <div className="flex flex-col items-center mb-6 shrink-0">
-        <div className="w-16 h-16 bg-primary rounded-[20px] flex items-center justify-center shadow-2xl shadow-primary/20 mb-4">
-          <Church className="w-8 h-8 text-white" />
-        </div>
+        <AppLogo className="w-16 h-16 mb-4 !rounded-[24px]" iconClassName="w-9 h-9" />
         <h1 className="text-[28px] font-display font-black text-primary leading-tight">Thông Tin Linh Mục</h1>
         <p className="text-gray-400 font-bold text-xs mt-1">Đăng nhập Linh mục</p>
       </div>
@@ -336,15 +473,15 @@ const LoginScreen = ({ onLogin, onBack }: { onLogin: () => void, onBack: () => v
   );
 };
 
-const PriestHomeScreen = ({ onLogout, onProfileClick, onMassRequestClick, onNfcClick, onNotificationClick, onScanClick, onSearchClick, onBellClick, onHelpClick }: { onLogout: () => void, onProfileClick: () => void, onMassRequestClick: () => void, onNfcClick: () => void, onNotificationClick: () => void, onScanClick: () => void, onSearchClick: () => void, onBellClick: () => void, onHelpClick: () => void }) => {
+const PriestHomeScreen = ({ onLogout, onProfileClick, onBiometricClick, onMassRequestClick, onNfcClick, onNotificationClick, onMyQrClick, onSearchClick, onBellClick, onHelpClick }: { onLogout: () => void, onProfileClick: () => void, onBiometricClick: () => void, onMassRequestClick: () => void, onNfcClick: () => void, onNotificationClick: () => void, onMyQrClick: () => void, onSearchClick: () => void, onBellClick: () => void, onHelpClick: () => void }) => {
+  const liturgicalInfo = getLiturgicalData(new Date());
+
   return (
     <div className="flex flex-col gap-5 p-4 pb-32 bg-[#f8faff]">
       {/* Header */}
       <header className="flex justify-between items-center -mx-4 px-5 py-3 sticky top-0 z-40 bg-[#f8faff]/80 backdrop-blur-md">
         <div className="flex items-center gap-2">
-           <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-             <Church className="w-4.5 h-4.5 text-primary" />
-           </div>
+           <AppLogo className="w-8 h-8 !rounded-lg" iconClassName="w-4.5 h-4.5" />
            <h1 className="text-sm font-display font-black text-primary uppercase tracking-wider">Thông tin Linh mục</h1>
         </div>
         <div className="flex items-center gap-2">
@@ -369,10 +506,10 @@ const PriestHomeScreen = ({ onLogout, onProfileClick, onMassRequestClick, onNfcC
                 <p className="text-[10px] font-bold opacity-70 mt-1 uppercase tracking-wider">Giáo phận Phú Cường</p>
              </div>
           </div>
-          <div className="bg-white/20 backdrop-blur-md px-3 py-2 rounded-2xl border border-white/30 flex flex-col items-center gap-0.5">
-             <Fingerprint className="w-6 h-6 mb-0.5" />
-             <span className="text-[8px] font-black tracking-widest">FACEID</span>
-          </div>
+          <button onClick={onProfileClick} className="relative z-20 bg-white/20 backdrop-blur-md px-3 py-2 rounded-2xl border border-white/30 flex flex-col items-center gap-0.5 active:scale-95 transition-all">
+             <InfoIcon className="w-6 h-6 mb-0.5" />
+             <span className="text-[8px] font-black tracking-widest">THÔNG TIN</span>
+          </button>
           
           {/* Subtle patterns */}
           <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
@@ -393,17 +530,17 @@ const PriestHomeScreen = ({ onLogout, onProfileClick, onMassRequestClick, onNfcC
             </div>
             <span className="text-[11px] font-bold text-gray-600">Xin lễ</span>
          </button>
-         <button onClick={onScanClick} className="flex flex-col items-center gap-2">
+         <button onClick={onMyQrClick} className="flex flex-col items-center gap-2">
             <div className="w-12 h-12 bg-fuchsia-500 rounded-2xl flex items-center justify-center shadow-lg shadow-fuchsia-500/30">
                <QrCode className="w-6 h-6 text-white" />
             </div>
             <span className="text-[11px] font-bold text-gray-600">Mã QR</span>
          </button>
-         <button onClick={onProfileClick} className="flex flex-col items-center gap-2">
+         <button onClick={onBiometricClick} className="flex flex-col items-center gap-2">
             <div className="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
-               <InfoIcon className="w-6 h-6 text-white" />
+               <Fingerprint className="w-6 h-6 text-white" />
             </div>
-            <span className="text-[11px] font-bold text-gray-600">Chi tiết</span>
+            <span className="text-[11px] font-bold text-gray-600">FaceID</span>
          </button>
       </div>
 
@@ -435,7 +572,6 @@ const PriestHomeScreen = ({ onLogout, onProfileClick, onMassRequestClick, onNfcC
          </div>
       </div>
 
-      {/* Search Section */}
       <div className="mt-2 space-y-4">
          <h3 className="text-lg font-display font-black text-gray-900 ml-1">Tìm kiếm Linh mục</h3>
          <div className="bg-white rounded-[32px] p-5 shadow-sm border border-gray-100 space-y-3">
@@ -461,6 +597,52 @@ const PriestHomeScreen = ({ onLogout, onProfileClick, onMassRequestClick, onNfcC
                <Search className="w-4 h-4" />
                TÌM KIẾM
             </button>
+         </div>
+      </div>
+
+      {/* Liturgical Day Info - NEW SECTION */}
+      <div className="bg-white rounded-[24px] shadow-sm border border-gray-100 overflow-hidden">
+         <div className="bg-gradient-to-r from-emerald-500/10 via-emerald-500/5 to-transparent p-4 flex items-center justify-between border-b border-emerald-100/50">
+            <div className="flex items-center gap-3">
+               <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 shadow-sm border border-emerald-200/50">
+                  <Calendar className="w-5 h-5" />
+               </div>
+               <div>
+                  <h4 className="text-[10px] font-black text-emerald-600 uppercase tracking-widest leading-tight">Ngày Phụng vụ</h4>
+                  <p className="text-sm font-black text-gray-800">{liturgicalInfo.dateString}</p>
+               </div>
+            </div>
+            <div className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[9px] font-black border border-emerald-100 uppercase tracking-wider">
+               {liturgicalInfo.season}
+            </div>
+         </div>
+         
+         <div className="p-4 space-y-3">
+            {/* Saint/Feast */}
+            <div className="flex items-start gap-3 bg-gray-50/50 p-2.5 rounded-xl border border-gray-100/50">
+               <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600 shrink-0">
+                  <Star className="w-4 h-4 fill-amber-600" />
+               </div>
+               <div>
+                  <p className="text-[9px] font-black text-amber-500 uppercase tracking-wider mb-0.5">Lễ kính / Kỷ niệm</p>
+                  <p className="text-[11px] font-bold text-gray-700">{liturgicalInfo.feast}</p>
+               </div>
+            </div>
+
+            {/* Readings */}
+            <div className="grid grid-cols-1 gap-2.5">
+               {liturgicalInfo.readings.map((reading, idx) => (
+                 <div key={idx} className="flex items-center justify-between p-2 rounded-xl hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100">
+                    <div className="flex items-center gap-3">
+                       <div className={`w-7 h-7 rounded-lg ${reading.color} flex items-center justify-center ${reading.iconColor}`}>
+                          <reading.icon className="w-3.5 h-3.5" />
+                       </div>
+                       <span className="text-[11px] font-bold text-gray-600">{reading.label}</span>
+                    </div>
+                    <span className="text-[11px] font-black text-primary px-2 py-0.5 bg-primary/5 rounded-md">{reading.text}</span>
+                 </div>
+               ))}
+            </div>
          </div>
       </div>
 
@@ -761,6 +943,75 @@ const NotificationsScreen = ({ onBack }: { onBack: () => void }) => {
                 </div>
              ))}
           </div>
+       </div>
+    </div>
+  );
+};
+
+const MyQrScreen = ({ onBack }: { onBack: () => void }) => {
+  return (
+    <div className="flex flex-col min-h-full bg-[#f8faff] pb-32">
+       {/* Header */}
+       <header className="flex justify-between items-center px-4 py-3 sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
+          <button onClick={onBack} className="p-2 text-primary active:scale-90 transition-transform">
+             <ArrowLeft className="w-6 h-6" />
+          </button>
+          <h1 className="text-xl font-display font-black text-primary tracking-tight">Mã QR Định danh</h1>
+          <button className="p-2 text-primary active:scale-90 transition-transform">
+             <Share2 className="w-6 h-6" />
+          </button>
+       </header>
+
+       <div className="flex-1 flex flex-col items-center justify-center p-6 gap-8">
+          <div className="bg-white rounded-[48px] p-8 shadow-2xl shadow-primary/10 border border-gray-100 relative group">
+             {/* Decorative Corners */}
+             <div className="absolute top-6 left-6 w-8 h-8 border-t-4 border-l-4 border-primary rounded-tl-xl" />
+             <div className="absolute top-6 right-6 w-8 h-8 border-t-4 border-r-4 border-primary rounded-tr-xl" />
+             <div className="absolute bottom-6 left-6 w-8 h-8 border-b-4 border-l-4 border-primary rounded-bl-xl" />
+             <div className="absolute bottom-6 right-6 w-8 h-8 border-b-4 border-r-4 border-primary rounded-br-xl" />
+
+             <div className="p-4 bg-gray-50 rounded-[32px]">
+                <QRCodeCanvas 
+                   value="https://sacredlink.church/priest/hoangmanhhuy" 
+                   size={220}
+                   level="H"
+                   includeMargin={true}
+                   imageSettings={{
+                     src: "https://ais-dev-ky6ihea6wkmx2xem6howoi-537691938664.asia-southeast1.run.app/favicon.ico",
+                     x: undefined,
+                     y: undefined,
+                     height: 48,
+                     width: 48,
+                     excavate: true,
+                   }}
+                />
+             </div>
+          </div>
+
+          <div className="text-center space-y-2">
+             <div className="flex items-center justify-center gap-1.5 mb-1">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Đã xác thực danh tính</span>
+             </div>
+             <h2 className="text-2xl font-display font-black text-gray-900 uppercase tracking-tight">LM. PHAOLÔ</h2>
+             <h3 className="text-3xl font-display font-black text-primary leading-none uppercase">HOÀNG MẠNH HUY</h3>
+             <p className="text-xs font-bold text-gray-400 mt-2">Mã định danh: <span className="text-gray-600">SL-PC-12051980</span></p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
+             <button className="flex items-center justify-center gap-2 bg-white text-gray-700 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-sm border border-gray-100 active:scale-95 transition-all">
+                <Download className="w-4 h-4" />
+                Lưu ảnh
+             </button>
+             <button className="flex items-center justify-center gap-2 bg-primary text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/20 active:scale-95 transition-all">
+                <Share2 className="w-4 h-4" />
+                Chia sẻ
+             </button>
+          </div>
+
+          <p className="text-[10px] font-bold text-gray-400 text-center max-w-[200px] leading-relaxed uppercase tracking-widest">
+             Sử dụng mã QR này để điểm danh hoặc chia sẻ thông tin mục vụ chính thức.
+          </p>
        </div>
     </div>
   );
@@ -1185,8 +1436,8 @@ const ProfileScreen = ({ onBack, isAdminView = false, onMassRequestClick }: { on
                 <ArrowLeft className="w-6 h-6" />
              </button>
              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-display font-black text-blue-600 tracking-tight">Digital Ecclesia</h1>
-                <Bell className="w-5 h-5 text-blue-600" />
+                <AppLogo className="w-7 h-7 !rounded-lg" iconClassName="w-4 h-4" />
+                <h1 className="text-sm font-display font-black text-primary uppercase tracking-wider">Thông tin Linh mục</h1>
              </div>
           </div>
           <button className="px-4 py-1.5 border border-blue-200 rounded-full text-blue-600 text-xs font-bold hover:bg-blue-50 transition-colors">
@@ -1206,8 +1457,8 @@ const ProfileScreen = ({ onBack, isAdminView = false, onMassRequestClick }: { on
           </div>
           <div className="text-center">
              <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">TÊN THÁNH</p>
-             <h2 className="text-2xl font-display font-black text-gray-900 leading-none mb-1">Giuse</h2>
-             <h2 className="text-2xl font-display font-black text-blue-600 leading-none">Nguyễn Văn A</h2>
+             <h2 className="text-2xl font-display font-black text-gray-900 leading-none mb-1">{isAdminView ? 'Phaolô' : 'Giuse'}</h2>
+             <h2 className="text-2xl font-display font-black text-blue-600 leading-none">{isAdminView ? 'Hoàng Mạnh Huy' : 'Nguyễn Văn A'}</h2>
              <div className="mt-3 bg-[#E6F7F0] text-[#1DB171] px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-[#C6EFDE] inline-flex items-center gap-1.5">
                 <span className="w-2 h-2 bg-[#1DB171] rounded-full" />
                 Đang hoạt động
@@ -1237,7 +1488,7 @@ const ProfileScreen = ({ onBack, isAdminView = false, onMassRequestClick }: { on
                 <div className="flex justify-between items-end">
                    <div className="space-y-1">
                       <p className="text-[10px] font-black opacity-60 tracking-widest uppercase">GIÁO PHẬN</p>
-                      <p className="text-lg font-black leading-tight">Tổng Giáo Phận Sài Gòn</p>
+                      <p className="text-lg font-black leading-tight">{isAdminView ? 'Giáo phận Phú Cường' : 'Tổng Giáo Phận Sài Gòn'}</p>
                    </div>
                    <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/30 shadow-lg group">
                       <QrCode className="w-8 h-8 text-white group-active:scale-110 transition-transform" />
@@ -1261,7 +1512,7 @@ const ProfileScreen = ({ onBack, isAdminView = false, onMassRequestClick }: { on
                 </div>
                 <div>
                    <p className="text-[11px] text-gray-400 font-bold tracking-wide">Ngày sinh</p>
-                   <p className="text-lg font-black text-gray-800">15/03/1975</p>
+                   <p className="text-lg font-black text-gray-800">{isAdminView ? '12/05/1980' : '15/03/1975'}</p>
                 </div>
              </div>
              <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-50 flex flex-col items-start gap-4">
@@ -1270,21 +1521,21 @@ const ProfileScreen = ({ onBack, isAdminView = false, onMassRequestClick }: { on
                 </div>
                 <div>
                    <p className="text-[11px] text-gray-400 font-bold tracking-wide">Thụ phong</p>
-                   <p className="text-lg font-black text-gray-800">24/06/2002</p>
+                   <p className="text-lg font-black text-gray-800">{isAdminView ? '20/06/2008' : '24/06/2002'}</p>
                 </div>
              </div>
           </div>
 
           <div className="bg-white rounded-3xl shadow-sm border border-gray-50 overflow-hidden">
              {[
-               { icon: MapPin, label: 'Giáo xứ hiện tại', value: 'Giáo xứ Tân Định' },
-               { icon: GraduationCap, label: 'Học hàm/Học vị', value: 'Tiến sĩ Thần học' },
-               { icon: UserIcon, label: 'Ngày rửa tôi', value: '25/03/1975' },
-               { icon: ShieldCheck, label: 'Ngày thêm sức', value: '15/05/1987' },
-               { icon: School, label: 'Vào Tiểu chủng viện', value: '05/09/1990' },
-               { icon: Building, label: 'Vào Đại chủng viện', value: '01/09/1996' },
-               { icon: Sparkles, label: 'Truyền chức Phó tế', value: '31/05/2001' },
-               { icon: Mail, label: 'Email liên hệ', value: 'giuse.ngvan@ecclesia.vn', blue: true }
+               { icon: MapPin, label: 'Giáo xứ hiện tại', value: isAdminView ? 'Giáo xứ Phú Cường' : 'Giáo xứ Tân Định' },
+               { icon: GraduationCap, label: 'Học hàm/Học vị', value: isAdminView ? 'Thạc sĩ Mục vụ' : 'Tiến sĩ Thần học' },
+               { icon: UserIcon, label: 'Ngày rửa tôi', value: isAdminView ? '12/05/1980' : '25/03/1975' },
+               { icon: ShieldCheck, label: 'Ngày thêm sức', value: isAdminView ? '15/05/1992' : '15/05/1987' },
+               { icon: School, label: 'Vào Tiểu chủng viện', value: isAdminView ? '05/09/1995' : '05/09/1990' },
+               { icon: Building, label: 'Vào Đại chủng viện', value: isAdminView ? '01/09/2001' : '01/09/1996' },
+               { icon: Sparkles, label: 'Truyền chức Phó tế', value: isAdminView ? '31/05/2007' : '31/05/2001' },
+               { icon: Mail, label: 'Email liên hệ', value: isAdminView ? 'hoangmanhhuy@gmail.com' : 'giuse.ngvan@ecclesia.vn', blue: true }
              ].map((item, idx) => (
                 <div key={idx} className="p-4 flex items-center justify-between border-b last:border-0 border-gray-50">
                    <div className="flex items-center gap-3">
@@ -1329,27 +1580,45 @@ const ProfileScreen = ({ onBack, isAdminView = false, onMassRequestClick }: { on
           <section className="space-y-3">
              <div className="flex items-center gap-2 px-1">
                 <History className="w-4 h-4 text-gray-500" />
-                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">LỊCH SỬ CÔNG TÁC</h4>
+                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">HOẠT ĐỘNG SỨ VỤ</h4>
              </div>
              <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-50">
                 <div className="space-y-8 relative">
-                   <div className="absolute left-[7px] top-2 bottom-6 w-[2px] bg-gray-50" />
+                   <div className="absolute left-[7px] top-2 bottom-6 w-[2px] bg-gray-100/50" />
                    
                    <div className="relative pl-8">
-                      <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-blue-600 ring-4 ring-blue-50" />
+                      <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-blue-600 ring-4 ring-blue-100" />
                       <div className="flex flex-col gap-1">
-                         <span className="text-[11px] font-black text-blue-600 uppercase tracking-widest">2018 - Nay</span>
-                         <h5 className="text-base font-black text-gray-800 uppercase leading-snug">Chánh xứ</h5>
-                         <p className="text-xs font-bold text-gray-400">Giáo xứ Tân Định, Quận 3, TP.HCM</p>
+                         <span className="text-[11px] font-black text-blue-600 uppercase tracking-widest">2022 - NAY</span>
+                         <h5 className="text-base font-black text-gray-800 uppercase leading-snug">Trưởng ban Truyền thông</h5>
+                         <p className="text-xs font-bold text-gray-400">Giáo phận Phú Cường</p>
                       </div>
                    </div>
 
                    <div className="relative pl-8">
                       <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-gray-200 border-2 border-white ring-4 ring-white" />
                       <div className="flex flex-col gap-1">
-                         <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest">2012 - 2018</span>
-                         <h5 className="text-base font-black text-gray-700 uppercase leading-snug">Phụ tá Giám đốc</h5>
-                         <p className="text-xs font-bold text-gray-400">Đại chủng viện Thánh Giuse Sài Gòn</p>
+                         <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest">2018 - 2022</span>
+                         <h5 className="text-base font-black text-gray-700 uppercase leading-snug">Phó ban Truyền thông</h5>
+                         <p className="text-xs font-bold text-gray-400">Ban Truyền thông Giáo phận</p>
+                      </div>
+                   </div>
+
+                   <div className="relative pl-8">
+                      <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-gray-200 border-2 border-white ring-4 ring-white" />
+                      <div className="flex flex-col gap-1">
+                         <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest">{isAdminView ? '2016 - 2018' : '2018 - Nay'}</span>
+                         <h5 className="text-base font-black text-gray-700 uppercase leading-snug">{isAdminView ? 'Chánh xứ' : 'Chánh xứ'}</h5>
+                         <p className="text-xs font-bold text-gray-400">{isAdminView ? 'Giáo xứ Phú Cường, Thủ Dầu Một' : 'Giáo xứ Tân Định, Quận 3, TP.HCM'}</p>
+                      </div>
+                   </div>
+
+                   <div className="relative pl-8">
+                      <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-gray-200 border-2 border-white ring-4 ring-white" />
+                      <div className="flex flex-col gap-1">
+                         <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest">{isAdminView ? '2010 - 2016' : '2012 - 2018'}</span>
+                         <h5 className="text-base font-black text-gray-700 uppercase leading-snug">{isAdminView ? 'Phó xứ' : 'Phụ tá Giám đốc'}</h5>
+                         <p className="text-xs font-bold text-gray-400">{isAdminView ? 'Giáo xứ Chánh Tòa Phú Cường' : 'Đại chủng viện Thánh Giuse Sài Gòn'}</p>
                       </div>
                    </div>
                 </div>
@@ -1549,8 +1818,10 @@ const NFCScreen = ({ onCancel }: { onCancel: () => void }) => {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
-  const [currentScreen, setCurrentScreen] = useState<'home' | 'profile' | 'scan' | 'nfc' | 'login' | 'priest-dashboard' | 'priest-profile' | 'mass-request' | 'mass-request-detail' | 'history' | 'settings' | 'search-detail' | 'notifications' | 'priest-help'>('home');
+  const [currentScreen, setCurrentScreen] = useState<'home' | 'profile' | 'scan' | 'nfc' | 'login' | 'priest-dashboard' | 'priest-profile' | 'mass-request' | 'mass-request-detail' | 'history' | 'settings' | 'search-detail' | 'notifications' | 'priest-help' | 'my-qr'>('home');
   const [userRole, setUserRole] = useState<'public' | 'priest'>('public');
+  const [isBiometricModalOpen, setIsBiometricModalOpen] = useState(false);
+  const [selectedBiometric, setSelectedBiometric] = useState<'faceid' | 'fingerprint' | null>(null);
 
   const renderScreen = () => {
     switch (currentScreen) {
@@ -1571,6 +1842,7 @@ export default function App() {
       case 'search-detail': return <SearchDetailScreen onBack={() => setCurrentScreen('priest-dashboard')} />;
       case 'notifications': return <NotificationsScreen onBack={() => setCurrentScreen(userRole === 'priest' ? 'priest-dashboard' : 'settings')} />;
       case 'priest-help': return <PriestHelpScreen onBack={() => setCurrentScreen('priest-dashboard')} />;
+      case 'my-qr': return <MyQrScreen onBack={() => setCurrentScreen('priest-dashboard')} />;
       case 'login': return (
         <LoginScreen 
           onLogin={() => { setUserRole('priest'); setCurrentScreen('priest-dashboard'); setActiveTab('home'); }} 
@@ -1581,10 +1853,11 @@ export default function App() {
         <PriestHomeScreen 
           onLogout={() => { setUserRole('public'); setCurrentScreen('home'); setActiveTab('home'); }} 
           onProfileClick={() => setCurrentScreen('priest-profile')}
+          onBiometricClick={() => setIsBiometricModalOpen(true)}
           onMassRequestClick={() => setCurrentScreen('mass-request')}
           onNfcClick={() => setCurrentScreen('nfc')}
           onNotificationClick={() => setCurrentScreen('mass-request-detail')}
-          onScanClick={() => setCurrentScreen('scan')}
+          onMyQrClick={() => setCurrentScreen('my-qr')}
           onSearchClick={() => setCurrentScreen('search-detail')}
           onBellClick={() => setCurrentScreen('notifications')}
           onHelpClick={() => setCurrentScreen('priest-help')}
@@ -1619,6 +1892,65 @@ export default function App() {
             </motion.div>
           </AnimatePresence>
         </div>
+
+        <AnimatePresence>
+          {isBiometricModalOpen && (
+            <div className="absolute inset-0 z-[100] flex items-end justify-center bg-black/40 backdrop-blur-sm">
+              <motion.div
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                exit={{ y: "100%" }}
+                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                className="w-full bg-white rounded-t-[40px] p-6 pb-12 shadow-2xl relative"
+              >
+                <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-8" />
+                
+                <div className="text-center mb-8">
+                  <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-emerald-100 shadow-sm">
+                    <Fingerprint className="w-10 h-10 text-emerald-600" />
+                  </div>
+                  <h3 className="text-2xl font-display font-black text-gray-800">Bảo mật sinh trắc học</h3>
+                  <p className="text-sm text-gray-400 font-bold mt-1">Chọn phương thức mở khoá phù hợp</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <button 
+                    onClick={() => { setSelectedBiometric('faceid'); setIsBiometricModalOpen(false); }}
+                    className={`flex flex-col items-center justify-center p-6 rounded-[32px] border-2 transition-all active:scale-95 ${
+                      selectedBiometric === 'faceid' ? 'border-blue-600 bg-blue-50/50' : 'border-gray-50 bg-gray-50'
+                    }`}
+                  >
+                    <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm mb-3">
+                      <Smartphone className="w-7 h-7 text-blue-600" />
+                    </div>
+                    <span className="text-sm font-black text-gray-700">FaceID</span>
+                    {selectedBiometric === 'faceid' && <CheckCircle2 className="w-4 h-4 text-blue-600 mt-2" />}
+                  </button>
+
+                  <button 
+                    onClick={() => { setSelectedBiometric('fingerprint'); setIsBiometricModalOpen(false); }}
+                    className={`flex flex-col items-center justify-center p-6 rounded-[32px] border-2 transition-all active:scale-95 ${
+                      selectedBiometric === 'fingerprint' ? 'border-primary bg-primary/5' : 'border-gray-50 bg-gray-50'
+                    }`}
+                  >
+                    <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm mb-3">
+                      <Fingerprint className="w-7 h-7 text-primary" />
+                    </div>
+                    <span className="text-sm font-black text-gray-700">Vân tay</span>
+                    {selectedBiometric === 'fingerprint' && <CheckCircle2 className="w-4 h-4 text-primary mt-2" />}
+                  </button>
+                </div>
+
+                <button 
+                  onClick={() => setIsBiometricModalOpen(false)}
+                  className="w-full mt-8 py-4 text-gray-400 font-black text-sm uppercase tracking-widest"
+                >
+                  Bỏ qua
+                </button>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
         
         {currentScreen !== 'scan' && currentScreen !== 'nfc' && currentScreen !== 'login' && (
           <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
