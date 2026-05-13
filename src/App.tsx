@@ -21,6 +21,8 @@ import {
   BadgeCheck,
   Circle,
   ShieldCheck,
+  School,
+  Building,
   ChevronRight,
   ArrowLeft,
   Flashlight,
@@ -35,7 +37,16 @@ import {
   Fingerprint,
   Maximize,
   Clock,
-  Check
+  Check,
+  ListFilter,
+  CheckCircle2,
+  Rss,
+  Contact,
+  Menu,
+  UserCog,
+  Undo2,
+  Languages,
+  HelpCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState } from 'react';
@@ -45,8 +56,8 @@ import { useState } from 'react';
 const BottomNav = ({ activeTab, onTabChange }: { activeTab: string, onTabChange: (tab: string) => void }) => {
   const tabs = [
     { id: 'home', label: 'Trang chủ', icon: Home, color: 'bg-primary' },
-    { id: 'nfc', label: 'NFC', icon: Nfc, color: 'bg-secondary' },
-    { id: 'scan', label: 'Quét QR', icon: QrCode, color: 'bg-secondary' },
+    { id: 'nfc', label: 'Quét thẻ', icon: Nfc, color: 'bg-orange-500' },
+    { id: 'scan', label: 'Quét QR', icon: QrCode, color: 'bg-blue-600' },
     { id: 'history', label: 'Lịch sử', icon: History, color: 'bg-tertiary' },
     { id: 'settings', label: 'Cài đặt', icon: Settings, color: 'bg-primary' },
   ];
@@ -325,7 +336,7 @@ const LoginScreen = ({ onLogin, onBack }: { onLogin: () => void, onBack: () => v
   );
 };
 
-const PriestHomeScreen = ({ onLogout, onProfileClick }: { onLogout: () => void, onProfileClick: () => void }) => {
+const PriestHomeScreen = ({ onLogout, onProfileClick, onMassRequestClick, onNfcClick, onNotificationClick, onScanClick, onSearchClick, onBellClick }: { onLogout: () => void, onProfileClick: () => void, onMassRequestClick: () => void, onNfcClick: () => void, onNotificationClick: () => void, onScanClick: () => void, onSearchClick: () => void, onBellClick: () => void }) => {
   return (
     <div className="flex flex-col gap-5 p-4 pb-32 bg-[#f8faff]">
       {/* Header */}
@@ -338,7 +349,7 @@ const PriestHomeScreen = ({ onLogout, onProfileClick }: { onLogout: () => void, 
         </div>
         <div className="flex items-center gap-2">
            <button onClick={onLogout} className="text-[10px] font-black text-gray-400 border border-gray-200 px-3 py-1.5 rounded-full hover:border-primary transition-colors">THOÁT</button>
-           <button className="w-9 h-9 flex items-center justify-center text-primary relative">
+           <button onClick={onBellClick} className="w-9 h-9 flex items-center justify-center text-primary relative">
               <Bell className="w-6 h-6" />
               <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-[#f8faff]" />
            </button>
@@ -370,19 +381,19 @@ const PriestHomeScreen = ({ onLogout, onProfileClick }: { onLogout: () => void, 
 
       {/* Action Bar - New Compact Style from Image */}
       <div className="bg-white rounded-[32px] p-5 shadow-sm border border-gray-100/50 flex justify-between items-center">
-         <button className="flex flex-col items-center gap-2">
+         <button onClick={onNfcClick} className="flex flex-col items-center gap-2">
             <div className="w-12 h-12 bg-orange-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/30">
-               <Maximize className="w-6 h-6 text-white" />
+               <Nfc className="w-6 h-6 text-white" />
             </div>
             <span className="text-[11px] font-bold text-gray-600">Quét thẻ</span>
          </button>
-         <button className="flex flex-col items-center gap-2">
+         <button onClick={onMassRequestClick} className="flex flex-col items-center gap-2">
             <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/30">
                <Clock className="w-6 h-6 text-white" />
             </div>
             <span className="text-[11px] font-bold text-gray-600">Xin lễ</span>
          </button>
-         <button className="flex flex-col items-center gap-2">
+         <button onClick={onScanClick} className="flex flex-col items-center gap-2">
             <div className="w-12 h-12 bg-fuchsia-500 rounded-2xl flex items-center justify-center shadow-lg shadow-fuchsia-500/30">
                <QrCode className="w-6 h-6 text-white" />
             </div>
@@ -411,7 +422,10 @@ const PriestHomeScreen = ({ onLogout, onProfileClick }: { onLogout: () => void, 
             <div className="mt-4 flex items-center justify-between">
                <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">5 PHÚT TRƯỚC</span>
                <div className="flex gap-2">
-                  <button className="bg-gray-50 text-gray-500 px-4 py-2 rounded-xl text-xs font-bold border border-gray-100">CHI TIẾT</button>
+                  <button 
+                    onClick={onNotificationClick}
+                    className="bg-gray-50 text-gray-500 px-4 py-2 rounded-xl text-xs font-bold border border-gray-100 active:scale-95 transition-all"
+                  >CHI TIẾT</button>
                   <button className="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-indigo-100">
                      <Check className="w-4 h-4" />
                      DUYỆT
@@ -443,7 +457,7 @@ const PriestHomeScreen = ({ onLogout, onProfileClick }: { onLogout: () => void, 
                </select>
                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 w-5 h-5" />
             </div>
-            <button className="w-full bg-primary text-white py-4 rounded-[20px] font-black text-sm shadow-xl shadow-primary/10 flex items-center justify-center gap-2 active:scale-95 transition-all mt-1">
+            <button onClick={onSearchClick} className="w-full bg-primary text-white py-4 rounded-[20px] font-black text-sm shadow-xl shadow-primary/10 flex items-center justify-center gap-2 active:scale-95 transition-all mt-1">
                <Search className="w-4 h-4" />
                TÌM KIẾM
             </button>
@@ -459,9 +473,624 @@ const PriestHomeScreen = ({ onLogout, onProfileClick }: { onLogout: () => void, 
   );
 };
 
-const ProfileScreen = ({ onBack, isAdminView = false }: { onBack: () => void, isAdminView?: boolean }) => {
+const HistoryScreen = () => {
+  const [activeFilter, setActiveFilter] = useState('Tất cả');
+  const filters = ['Tất cả', 'Cập nhật', 'Dâng lễ', 'Đóng góp'];
+
+  const historyItems = [
+    {
+      id: 1,
+      type: 'Cập nhật',
+      title: 'Yêu cầu cập nhật thông tin',
+      status: 'Đã hoàn thành',
+      date: '20/10/2023',
+      icon: UserCog,
+      color: 'border-l-emerald-500',
+      statusColor: 'text-emerald-600 bg-emerald-50',
+    },
+    {
+      id: 2,
+      type: 'Dâng lễ',
+      title: 'Xin dâng lễ tạ ơn',
+      status: 'Đang xử lý',
+      date: '18/10/2023',
+      icon: Church,
+      color: 'border-l-orange-500',
+      statusColor: 'text-orange-600 bg-orange-50',
+    },
+    {
+      id: 3,
+      type: 'Cập nhật',
+      title: 'Yêu cầu cập nhật thông tin',
+      status: 'Đã từ chối',
+      date: '15/10/2023',
+      icon: Undo2,
+      color: 'border-l-red-500',
+      statusColor: 'text-red-600 bg-red-50',
+    },
+    {
+      id: 4,
+      type: 'Dâng lễ',
+      title: 'Xin dâng lễ cầu bình an',
+      status: 'Đã hoàn thành',
+      date: '10/10/2023',
+      icon: Church,
+      color: 'border-l-emerald-500',
+      statusColor: 'text-emerald-600 bg-emerald-50',
+    },
+  ];
+
   return (
-    <div className="flex flex-col min-h-screen bg-[#F0F4F8] pb-32">
+    <div className="flex flex-col min-h-full bg-[#f8faff] pb-32">
+       {/* Header */}
+       <header className="flex justify-between items-center px-4 py-3 sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+          <button className="p-2 text-primary">
+             <Menu className="w-6 h-6" />
+          </button>
+          <h1 className="text-xl font-display font-black text-primary tracking-tight">Sacred Link</h1>
+          <button className="p-2 text-primary">
+             <Search className="w-6 h-6" />
+          </button>
+       </header>
+
+       <div className="p-4 space-y-6 overflow-x-hidden">
+          {/* Page Title */}
+          <div>
+             <h2 className="text-2xl font-display font-black text-gray-900 leading-tight">Lịch sử hoạt động</h2>
+             <p className="text-sm font-bold text-gray-400 mt-1">Theo dõi các yêu cầu và cập nhật của bạn.</p>
+          </div>
+
+          {/* Search Bar */}
+          <div className="relative group">
+             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-focus-within:text-primary transition-colors" />
+             <input 
+               type="text" 
+               placeholder="Tìm kiếm lịch sử..." 
+               className="w-full bg-white rounded-[20px] py-4 pl-12 pr-4 outline-none font-bold text-sm text-gray-800 border-2 border-transparent focus:border-primary/10 shadow-sm transition-all"
+             />
+          </div>
+
+          {/* Filters */}
+          <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4">
+             {filters.map((filter) => (activeFilter === filter) ? (
+                <button
+                   key={filter}
+                   className="px-6 py-2.5 rounded-full text-xs font-black bg-primary text-white shadow-lg shadow-primary/20 scale-105 transition-all whitespace-nowrap"
+                >
+                   {filter}
+                </button>
+             ) : (
+                <button
+                   key={filter}
+                   onClick={() => setActiveFilter(filter)}
+                   className="px-6 py-2.5 rounded-full text-xs font-black bg-white text-gray-400 border border-gray-100 hover:bg-gray-50 transition-all whitespace-nowrap"
+                >
+                   {filter}
+                </button>
+             ))}
+          </div>
+
+          {/* List */}
+          <div className="space-y-4">
+             {historyItems.map((item) => (
+                <motion.div 
+                  key={item.id}
+                  whileHover={{ x: 4 }}
+                  className={`bg-white rounded-[24px] p-4 shadow-sm border border-gray-50 border-l-[6px] ${item.color} flex items-center gap-4 cursor-pointer`}
+                >
+                   <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400">
+                      <item.icon className="w-6 h-6" />
+                   </div>
+                   <div className="flex-1 min-w-0">
+                      <h4 className="text-[15px] font-black text-gray-800 truncate mb-1">{item.title}</h4>
+                      <div className="flex items-center gap-2">
+                         <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${item.statusColor}`}>
+                            {item.status}
+                         </span>
+                         <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">• {item.date}</span>
+                      </div>
+                   </div>
+                   <ChevronRight className="w-5 h-5 text-gray-300" />
+                </motion.div>
+             ))}
+          </div>
+       </div>
+    </div>
+  );
+};
+
+const SettingsScreen = ({ onBellClick }: { onBellClick: () => void }) => {
+  const settingsGroups = [
+    {
+      title: 'Tài khoản & Bảo mật',
+      items: [
+        { icon: UserIcon, label: 'Thông tin cá nhân', color: 'text-blue-600', bgColor: 'bg-blue-50' },
+        { icon: Fingerprint, label: 'Sinh trắc học', color: 'text-orange-600', bgColor: 'bg-orange-50' },
+        { icon: Lock, label: 'Đổi mật khẩu', color: 'text-red-600', bgColor: 'bg-red-50' },
+      ]
+    },
+    {
+      title: 'Ứng dụng & Hỗ trợ',
+      items: [
+        { icon: Languages, label: 'Ngôn ngữ', color: 'text-emerald-600', bgColor: 'bg-emerald-50' },
+        { icon: Undo2, label: 'Đề nghị cập nhật', color: 'text-indigo-600', bgColor: 'bg-indigo-50' },
+        { icon: HelpCircle, label: 'Hỗ trợ', color: 'text-amber-600', bgColor: 'bg-amber-50' },
+      ]
+    }
+  ];
+
+  return (
+    <div className="flex flex-col min-h-full bg-[#f8faff] pb-32">
+       {/* Header */}
+       <header className="flex justify-between items-center px-4 py-3 sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+          <div className="w-10"></div>
+          <h1 className="text-xl font-display font-black text-primary tracking-tight">Cài đặt</h1>
+          <button onClick={onBellClick} className="p-2 text-primary">
+             <Bell className="w-6 h-6" />
+          </button>
+       </header>
+
+       <div className="p-4 space-y-8">
+          {/* Profile Quick Summary */}
+          <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-50 flex items-center gap-4">
+             <div className="w-16 h-16 rounded-2xl overflow-hidden bg-gray-100 border-2 border-white shadow-md">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGmWxIVRZHVY7sZx9oNTNW9sV-enLy9YHyVPr-YRyTC4Vh6W_vmM2iDr1MD-CjemRbQACN9AAJ89iVpX3iHMBpP4GGL3a6piruosdhoQUUHTRPhlVWaKVNaHF8ANPbA9YUry1cGQS_jKFqI0UTjdy6_aYS5HyPXG40xuBs3O4il6AEKAGcxaeqzev1PRXYCDlSbDyswI3Z2mXxUwu9plX7-SPrJX-fD6vVa4QTxtxUNwB7i5sXy9uVOcmOvi_nqNb7-epUpvMR-K65" className="w-full h-full object-cover" />
+             </div>
+             <div>
+                <h3 className="text-lg font-black text-gray-800 leading-tight">LM. Phaolô Hoàng Mạnh Huy</h3>
+                <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mt-1">Giáo phận Phú Cường</p>
+             </div>
+          </div>
+
+          {settingsGroups.map((group, gIdx) => (
+             <div key={gIdx} className="space-y-3">
+                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">{group.title}</h4>
+                <div className="bg-white rounded-[32px] overflow-hidden shadow-sm border border-gray-50">
+                   {group.items.map((item, iIdx) => (
+                      <button 
+                        key={iIdx}
+                        className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-all border-b last:border-0 border-gray-50 active:scale-[0.99]"
+                      >
+                         <div className="flex items-center gap-4">
+                            <div className={`w-10 h-10 rounded-2xl ${item.bgColor} flex items-center justify-center ${item.color}`}>
+                               <item.icon className="w-5 h-5" />
+                            </div>
+                            <span className="text-sm font-black text-gray-700">{item.label}</span>
+                         </div>
+                         <ChevronRight className="w-5 h-5 text-gray-300" />
+                      </button>
+                   ))}
+                </div>
+             </div>
+          ))}
+
+          {/* Logout Button */}
+          <button className="w-full flex items-center justify-center gap-2 py-4 text-red-500 font-black text-sm hover:bg-red-50 rounded-[20px] transition-all border-2 border-transparent hover:border-red-100">
+             <LogOut className="w-5 h-5" />
+             ĐĂNG XUẤT
+          </button>
+
+          <div className="pt-4 pb-8 text-center">
+             <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.3em]">Sacred Link v1.0.4</p>
+             <p className="text-[10px] font-bold text-gray-200 mt-1">Copyright © 2024 Digital Ecclesia</p>
+          </div>
+       </div>
+    </div>
+  );
+};
+
+const NotificationsScreen = ({ onBack }: { onBack: () => void }) => {
+  const notifications = [
+    {
+      id: 1,
+      title: 'Yêu cầu dâng lễ mới',
+      content: 'Linh mục Phaolô Hoàng Mạnh Huy gửi yêu cầu dâng lễ an táng.',
+      time: '5 phút trước',
+      isRead: false,
+      type: 'mass'
+    },
+    {
+      id: 2,
+      title: 'Cập nhật hệ thống',
+      content: 'Hệ thống Sacred Link đã được cập nhật lên phiên bản 1.0.4.',
+      time: '2 giờ trước',
+      isRead: true,
+      type: 'system'
+    },
+    {
+      id: 3,
+      title: 'Nhắc lịch công tác',
+      content: 'Ngày mai bạn có buổi dâng lễ tại Giáo xứ Tân Định lúc 08:00.',
+      time: '1 ngày trước',
+      isRead: true,
+      type: 'calendar'
+    },
+    {
+      id: 4,
+      title: 'Yêu cầu cập nhật thông tin',
+      content: 'Văn phòng Giáo phận yêu cầu bạn cập nhật học vị mới.',
+      time: '3 ngày trước',
+      isRead: true,
+      type: 'profile'
+    }
+  ];
+
+  return (
+    <div className="flex flex-col min-h-full bg-[#f8faff] pb-32">
+       <header className="flex justify-between items-center px-4 py-3 sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+          <button onClick={onBack} className="p-2 text-primary">
+             <ArrowLeft className="w-6 h-6" />
+          </button>
+          <h1 className="text-xl font-display font-black text-primary tracking-tight">Thông báo</h1>
+          <button className="p-2 text-primary">
+             <MoreVertical className="w-6 h-6" />
+          </button>
+       </header>
+
+       <div className="p-4 space-y-4">
+          <div className="flex justify-between items-center px-1">
+             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Mới nhất</span>
+             <button className="text-xs font-bold text-primary">Đánh dấu đã đọc tất cả</button>
+          </div>
+
+          <div className="space-y-3">
+             {notifications.map((notif) => (
+                <div 
+                  key={notif.id}
+                  className={`bg-white rounded-[24px] p-4 shadow-sm border border-gray-50 flex gap-4 relative overflow-hidden transition-all active:scale-[0.98] ${!notif.isRead ? 'ring-2 ring-primary/5' : ''}`}
+                >
+                   {!notif.isRead && (
+                      <div className="absolute right-4 top-4 w-2 h-2 bg-blue-500 rounded-full" />
+                   )}
+                   <div className={`w-12 h-12 rounded-2xl shrink-0 flex items-center justify-center ${
+                      notif.type === 'mass' ? 'bg-indigo-50 text-indigo-600' :
+                      notif.type === 'system' ? 'bg-emerald-50 text-emerald-600' :
+                      notif.type === 'calendar' ? 'bg-amber-50 text-amber-600' :
+                      'bg-blue-50 text-blue-600'
+                   }`}>
+                      {notif.type === 'mass' ? <Clock className="w-6 h-6" /> :
+                       notif.type === 'system' ? <Verified className="w-6 h-6" /> :
+                       notif.type === 'calendar' ? <Calendar className="w-6 h-6" /> :
+                       <UserIcon className="w-6 h-6" />}
+                   </div>
+                   <div className="flex-1">
+                      <h4 className={`text-sm font-black mb-1 ${notif.isRead ? 'text-gray-700' : 'text-gray-900'}`}>{notif.title}</h4>
+                      <p className="text-xs text-gray-500 font-medium leading-relaxed">{notif.content}</p>
+                      <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest mt-2 block">{notif.time}</span>
+                   </div>
+                </div>
+             ))}
+          </div>
+       </div>
+    </div>
+  );
+};
+
+const MassRequestDetailScreen = ({ onBack }: { onBack: () => void }) => {
+  return (
+    <div className="absolute inset-0 bg-[#f6f8fb] z-[60] flex flex-col h-full overflow-hidden">
+       {/* Header */}
+       <header className="flex items-center px-4 py-3 sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100">
+          <button onClick={onBack} className="p-2 text-blue-600">
+             <ArrowLeft className="w-6 h-6" />
+          </button>
+          <div className="flex-1 text-center pr-10">
+             <h1 className="text-xl font-display font-black text-blue-800 tracking-tight">Chi tiết yêu cầu</h1>
+          </div>
+       </header>
+
+       <div className="flex-1 overflow-y-auto p-4 space-y-5 pb-32">
+          {/* Status Badge */}
+          <div className="flex justify-center py-2">
+             <div className="inline-flex items-center gap-2 bg-blue-100/50 text-blue-700 px-4 py-2 rounded-full border border-blue-100 shadow-sm">
+                <Sparkles className="w-4 h-4" />
+                <span className="text-[10px] font-black uppercase tracking-widest">Yêu cầu mới</span>
+             </div>
+          </div>
+          <p className="text-center text-xs font-bold text-gray-400 -mt-2">Yêu cầu dâng lễ từ linh mục khác cần được duyệt.</p>
+
+          {/* Section: Sender Info */}
+          <section className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 space-y-4">
+             <div className="flex items-center gap-2 mb-2">
+                <div className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400">
+                   <UserIcon className="w-4 h-4" />
+                </div>
+                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">THÔNG TIN LINH MỤC GỬI YÊU CẦU</h4>
+             </div>
+             
+             <div className="flex items-center gap-4 p-1">
+                <div className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center border-4 border-white shadow-sm">
+                   <UserIcon className="w-8 h-8 text-gray-400" />
+                </div>
+                <div>
+                   <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Tên thánh & Họ tên</p>
+                   <p className="text-lg font-black text-gray-800">Phaolô Nguyễn Văn A</p>
+                </div>
+             </div>
+
+             <div className="grid grid-cols-1 gap-4 pt-2">
+                <div className="flex items-start gap-3">
+                   <Church className="w-4 h-4 text-gray-300 mt-1" />
+                   <div>
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Giáo xứ hiện tại</p>
+                      <p className="text-sm font-bold text-gray-700">Giáo xứ Thánh Đa Minh, TGP Sài Gòn</p>
+                   </div>
+                </div>
+                <div className="flex items-start gap-3">
+                   <MapPin className="w-4 h-4 text-gray-300 mt-1" />
+                   <div>
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Số điện thoại liên hệ</p>
+                      <p className="text-sm font-bold text-gray-700">090 123 4567</p>
+                   </div>
+                </div>
+             </div>
+          </section>
+
+          {/* Section: Mass Details */}
+          <section className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 space-y-6">
+             <div className="flex items-center gap-2 mb-2">
+                <div className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400">
+                   <ListFilter className="w-4 h-4" />
+                </div>
+                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">CHI TIẾT DÂNG LỄ</h4>
+             </div>
+
+             <div className="p-4 bg-orange-50 border-l-4 border-orange-400 rounded-r-2xl">
+                <p className="text-[10px] font-black text-orange-400 uppercase tracking-widest mb-1">Loại lễ</p>
+                <p className="text-lg font-black text-orange-950">Lễ Cầu Hồn</p>
+             </div>
+
+             <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+                   <Calendar className="w-6 h-6" />
+                </div>
+                <div>
+                   <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Thời gian dự kiến</p>
+                   <p className="text-sm font-black text-gray-800">18:00 - Thứ Sáu, 24/11/2023</p>
+                </div>
+             </div>
+
+             <div className="space-y-2">
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Ý chỉ / Ghi chú</p>
+                <div className="bg-gray-50 rounded-2xl p-4 relative overflow-hidden">
+                   <div className="absolute top-2 right-4 text-blue-100 opacity-50">
+                      <Sparkles className="w-8 h-8 rotate-12" />
+                   </div>
+                   <p className="text-sm font-bold text-gray-600 italic relative z-10 leading-relaxed">
+                      "Cầu cho linh hồn Maria mới qua đời. Xin cha dâng lễ sốt sắng."
+                   </p>
+                </div>
+             </div>
+
+          </section>
+       </div>
+
+       {/* Bottom Actions Overlay */}
+       <div className="absolute bottom-0 w-full p-6 bg-white/80 backdrop-blur-md border-t border-gray-100 flex gap-4 pb-10">
+          <button className="flex-1 h-14 flex items-center justify-center rounded-2xl border-2 border-gray-200 text-gray-600 font-black text-sm active:bg-gray-50 transition-all gap-2">
+             <X className="w-5 h-5" strokeWidth={3} />
+             Từ chối
+          </button>
+          <button className="flex-1 h-14 flex items-center justify-center rounded-2xl bg-blue-600 shadow-xl shadow-blue-200 text-white font-black text-sm active:scale-[0.98] transition-all gap-2">
+             <Check className="w-5 h-5" strokeWidth={3} />
+             Duyệt yêu cầu
+          </button>
+       </div>
+    </div>
+  );
+};
+
+const SearchDetailScreen = ({ onBack }: { onBack: () => void }) => {
+  return (
+    <div className="flex flex-col min-h-full bg-[#f8faff] pb-32">
+       {/* Header */}
+       <header className="flex justify-between items-center px-4 py-3 sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100">
+          <button onClick={onBack} className="p-2 text-primary">
+             <ArrowLeft className="w-6 h-6" />
+          </button>
+          <div className="flex-1 text-center pr-10">
+             <h1 className="text-xl font-display font-black text-primary tracking-tight">Kết quả tìm kiếm</h1>
+          </div>
+       </header>
+
+       <div className="p-4 space-y-6">
+          {/* Profile Card */}
+          <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-50 flex flex-col items-center gap-4">
+             <div className="w-24 h-24 rounded-3xl overflow-hidden bg-gray-100 border-4 border-white shadow-md">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6TC9vRUUgKI9T11hymO9XUCZRVVb69CUZXLKtVxoIHEuEfhl1s_2yYGFO-mMbl9c7RcVXdttqm3yrTWvxu1emm73FSoTyD7N0ue9KINtZ8ZJKV4QubADC1F3e0EB9k7qkZNyaUAMeYorTNXwrUCaleP8FeQ7Yw8pu-1SpPVTYYsA-eg69xRVA9yvpR8pIKAkvIM-faPi1gAula_lRAhHiyMSjCB3zlhyo1U7zTzWRanI9zZe0kMgK0Kcxs4WBdRcAVEcrZZZl_Gx-" className="w-full h-full object-cover" />
+             </div>
+             <div className="text-center">
+                <h3 className="text-xl font-black text-gray-800 leading-tight">LM. Giuse Trần Văn Huy</h3>
+                <p className="text-[10px] font-black text-primary uppercase tracking-widest mt-1">Tổng Giáo Phận Hà Nội</p>
+                <div className="mt-3 inline-flex items-center gap-2 bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider border border-emerald-100">
+                   <div className="w-2 h-2 bg-emerald-500 rounded-full" />
+                   Đang hoạt động
+                </div>
+             </div>
+          </div>
+
+          {/* Info Sections - similar style to MassRequestDetailScreen but for Priest info */}
+          <section className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 space-y-4">
+             <div className="flex items-center gap-2 mb-2">
+                <div className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400">
+                   <UserIcon className="w-4 h-4" />
+                </div>
+                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">THÔNG TIN CƠ BẢN</h4>
+             </div>
+             
+             <div className="grid grid-cols-1 gap-4">
+                <div className="flex items-start gap-4">
+                   <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 shrink-0">
+                      <Calendar className="w-5 h-5" />
+                   </div>
+                   <div>
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Ngày sinh & Thụ phong</p>
+                      <p className="text-sm font-bold text-gray-700">12/05/1980 — Thụ phong: 20/06/2008</p>
+                   </div>
+                </div>
+                
+                <div className="flex items-start gap-4">
+                   <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 shrink-0">
+                      <Church className="w-5 h-5" />
+                   </div>
+                   <div>
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Giáo xứ hiện tại</p>
+                      <p className="text-sm font-bold text-gray-700">Giáo xứ Hàm Long, Q. Hoàn Kiếm, Hà Nội</p>
+                   </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                   <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 shrink-0">
+                      <GraduationCap className="w-5 h-5" />
+                   </div>
+                   <div>
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Học vị</p>
+                      <p className="text-sm font-bold text-gray-700">Thạc sĩ Mục vụ Giáo hội</p>
+                   </div>
+                </div>
+             </div>
+          </section>
+
+          {/* Action Buttons to connect */}
+          <div className="grid grid-cols-2 gap-4">
+             <button className="flex flex-col items-center justify-center p-5 bg-white rounded-[32px] shadow-sm border border-gray-50 gap-2 active:scale-95 transition-all">
+                <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600">
+                   <Phone className="w-6 h-6" />
+                </div>
+                <span className="text-[11px] font-black text-gray-600 uppercase tracking-wider">Gọi điện</span>
+             </button>
+             <button className="flex flex-col items-center justify-center p-5 bg-white rounded-[32px] shadow-sm border border-gray-50 gap-2 active:scale-95 transition-all">
+                <div className="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600">
+                   <Mail className="w-6 h-6" />
+                </div>
+                <span className="text-[11px] font-black text-gray-600 uppercase tracking-wider">Gửi Email</span>
+             </button>
+          </div>
+       </div>
+    </div>
+  );
+};
+
+const MassRequestScreen = ({ onBack }: { onBack: () => void }) => {
+  const [selectedType, setSelectedType] = useState('Tạ ơn');
+  const massTypes = ['Tạ ơn', 'Cầu bình an', 'An táng', 'Hôn phối', 'Khác'];
+
+  return (
+    <div className="flex flex-col min-h-full bg-[#f6fafe] pb-32">
+       {/* Header */}
+       <header className="flex items-center px-4 py-3 sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100">
+          <button onClick={onBack} className="p-2 text-blue-600">
+             <ArrowLeft className="w-6 h-6" />
+          </button>
+          <div className="flex-1 text-center pr-10">
+             <h1 className="text-xl font-display font-black text-gray-900 tracking-tight">Xin dâng lễ</h1>
+             <p className="text-[10px] font-bold text-gray-400 mt-0.5">Gửi yêu cầu xin dâng thánh lễ</p>
+          </div>
+       </header>
+
+       <div className="p-4 space-y-5 mt-2">
+          {/* Section: Mass Type */}
+          <section className="bg-white rounded-[28px] p-6 shadow-sm border border-gray-100">
+             <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+                   <ListFilter className="w-4 h-4" />
+                </div>
+                <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest">Loại lễ</h4>
+             </div>
+             <div className="flex flex-wrap gap-2">
+                {massTypes.map((type) => (
+                   <button
+                      key={type}
+                      onClick={() => setSelectedType(type)}
+                      className={`px-5 py-2.5 rounded-full text-xs font-black transition-all ${
+                         selectedType === type
+                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 scale-105'
+                            : 'bg-gray-50 text-gray-400 border border-gray-100 hover:bg-gray-100'
+                      }`}
+                   >
+                      {type}
+                   </button>
+                ))}
+             </div>
+          </section>
+
+          {/* Section: Parish Selection */}
+          <section className="bg-white rounded-[28px] p-6 shadow-sm border border-gray-100 space-y-4">
+             <div className="flex items-center gap-2 mb-1">
+                <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+                   <Church className="w-4 h-4" />
+                </div>
+                <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest">Chọn Giáo xứ</h4>
+             </div>
+             
+             <div className="relative group">
+                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-focus-within:text-blue-500 transition-colors" />
+                <select className="w-full bg-gray-50 rounded-2xl py-4 pl-12 pr-10 outline-none font-bold text-sm text-gray-800 appearance-none border-2 border-transparent focus:border-blue-100 transition-all">
+                   <option>Giáo xứ Đức Bà</option>
+                   <option>Giáo xứ Tân Định</option>
+                   <option>Giáo xứ Huyện Sỹ</option>
+                </select>
+                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 w-5 h-5" />
+             </div>
+
+             <div className="bg-blue-50/50 rounded-2xl p-4 flex items-center gap-4 border border-blue-50">
+                <div className="w-12 h-12 bg-white rounded-xl shadow-sm overflow-hidden border-2 border-white flex items-center justify-center">
+                   <UserIcon className="w-7 h-7 text-blue-200" />
+                </div>
+                <div>
+                   <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest leading-none mb-1">Linh mục chánh xứ</p>
+                   <p className="text-sm font-black text-blue-900">Lm. Gioan Baotixita Nguyễn Văn A</p>
+                </div>
+             </div>
+          </section>
+
+          {/* Section: Time Selection */}
+          <section className="bg-white rounded-[28px] p-6 shadow-sm border border-gray-100">
+             <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+                   <Clock className="w-4 h-4" />
+                </div>
+                <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest">Thời gian dự kiến</h4>
+             </div>
+             <div className="relative group">
+                <input 
+                   type="datetime-local" 
+                   className="w-full bg-gray-50 rounded-2xl py-4 px-4 outline-none font-bold text-sm text-gray-800 border-2 border-transparent focus:border-blue-100 transition-all appearance-none"
+                />
+             </div>
+          </section>
+
+          {/* Section: Notes */}
+          <section className="bg-white rounded-[28px] p-6 shadow-sm border border-gray-100">
+             <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+                   <Sparkles className="w-4 h-4" />
+                </div>
+                <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest">Mục đích / Ghi chú</h4>
+             </div>
+             <textarea 
+                placeholder="Nhập ý chỉ hoặc ghi chú thêm cho Cha xứ..."
+                className="w-full bg-gray-50 rounded-2xl p-4 outline-none font-bold text-sm text-gray-800 min-h-[120px] border-2 border-transparent focus:border-blue-100 placeholder:text-gray-300 transition-all resize-none"
+             />
+          </section>
+
+          {/* Submit Button */}
+          <button className="w-full bg-blue-600 text-white py-5 rounded-[24px] font-black text-base shadow-xl shadow-blue-200 active:scale-[0.98] transition-all flex items-center justify-center gap-3">
+             Gửi yêu cầu
+             <ArrowRight className="w-5 h-5" />
+          </button>
+          
+          <p className="text-center text-[10px] font-bold text-gray-400 px-8 leading-relaxed">
+             Yêu cầu của bạn sẽ được gửi trực tiếp đến văn phòng giáo xứ. Bạn sẽ nhận được thông báo khi có phản hồi.
+          </p>
+       </div>
+    </div>
+  );
+};
+
+const ProfileScreen = ({ onBack, isAdminView = false, onMassRequestClick }: { onBack: () => void, isAdminView?: boolean, onMassRequestClick?: () => void }) => {
+  return (
+    <div className="flex flex-col min-h-full bg-[#F0F4F8] pb-32">
        {/* Header */}
        <header className="flex justify-between items-center px-4 py-3 sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
           <div className="flex items-center gap-2">
@@ -479,7 +1108,7 @@ const ProfileScreen = ({ onBack, isAdminView = false }: { onBack: () => void, is
        </header>
 
        {/* Profile Hero */}
-       <div className="flex flex-col items-center pt-8 pb-6">
+       <div className="flex flex-col items-center pt-6 pb-4">
           <div className="relative mb-4">
              <div className="w-36 h-36 rounded-full border-[6px] border-white shadow-2xl overflow-hidden ring-1 ring-gray-100">
                 <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGmWxIVRZHVY7sZx9oNTNW9sV-enLy9YHyVPr-YRyTC4Vh6W_vmM2iDr1MD-CjemRbQACN9AAJ89iVpX3iHMBpP4GGL3a6piruosdhoQUUHTRPhlVWaKVNaHF8ANPbA9YUry1cGQS_jKFqI0UTjdy6_aYS5HyPXG40xuBs3O4il6AEKAGcxaeqzev1PRXYCDlSbDyswI3Z2mXxUwu9plX7-SPrJX-fD6vVa4QTxtxUNwB7i5sXy9uVOcmOvi_nqNb7-epUpvMR-K65" className="w-full h-full object-cover" />
@@ -500,7 +1129,7 @@ const ProfileScreen = ({ onBack, isAdminView = false }: { onBack: () => void, is
        </div>
 
        {/* Digital ID Card */}
-       <div className="px-4 mb-12">
+       <div className="px-4 mb-6">
           <div className="bg-gradient-to-br from-[#1976D2] to-[#1565C0] rounded-2xl p-6 shadow-[0_12px_24px_rgba(25,118,210,0.25)] text-white relative overflow-hidden h-[180px]">
              {/* Architectural Graphic */}
              <div className="absolute right-0 bottom-0 top-6 w-full opacity-[0.08] pointer-events-none">
@@ -532,8 +1161,8 @@ const ProfileScreen = ({ onBack, isAdminView = false }: { onBack: () => void, is
        </div>
 
        {/* Details Grid */}
-       <div className="px-4 mt-8 space-y-6">
-          <div className="flex items-center gap-2 px-1 py-1">
+       <div className="px-4 mt-2 space-y-4">
+          <div className="flex items-center gap-2 px-1">
              <InfoIcon className="w-4 h-4 text-gray-400" />
              <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">THÔNG TIN CHI TIẾT</h4>
           </div>
@@ -563,47 +1192,60 @@ const ProfileScreen = ({ onBack, isAdminView = false }: { onBack: () => void, is
              {[
                { icon: MapPin, label: 'Giáo xứ hiện tại', value: 'Giáo xứ Tân Định' },
                { icon: GraduationCap, label: 'Học hàm/Học vị', value: 'Tiến sĩ Thần học' },
+               { icon: UserIcon, label: 'Ngày rửa tôi', value: '25/03/1975' },
+               { icon: ShieldCheck, label: 'Ngày thêm sức', value: '15/05/1987' },
+               { icon: School, label: 'Vào Tiểu chủng viện', value: '05/09/1990' },
+               { icon: Building, label: 'Vào Đại chủng viện', value: '01/09/1996' },
+               { icon: Sparkles, label: 'Truyền chức Phó tế', value: '31/05/2001' },
                { icon: Mail, label: 'Email liên hệ', value: 'giuse.ngvan@ecclesia.vn', blue: true }
              ].map((item, idx) => (
-                <div key={idx} className="p-5 flex items-center justify-between border-b last:border-0 border-gray-50">
-                   <div className="flex items-center gap-4">
-                      <item.icon className="w-5 h-5 text-gray-400" />
-                      <span className="text-sm font-bold text-gray-500">{item.label}</span>
+                <div key={idx} className="p-4 flex items-center justify-between border-b last:border-0 border-gray-50">
+                   <div className="flex items-center gap-3">
+                      <item.icon className="w-4 h-4 text-gray-400" />
+                      <span className="text-[11px] font-bold text-gray-400 uppercase tracking-tight">{item.label}</span>
                    </div>
-                   <span className={`text-sm font-black ${item.blue ? 'text-blue-600 underline' : 'text-gray-800'}`}>{item.value}</span>
+                   <span className={`text-[13px] font-black ${item.blue ? 'text-blue-600 underline' : 'text-gray-800'}`}>{item.value}</span>
                 </div>
              ))}
           </div>
 
-          {/* QR Display Section */}
-          <div className="bg-white rounded-[40px] p-8 border border-gray-50 shadow-sm text-center">
-             <h3 className="text-2xl font-display font-black text-blue-600 mb-6">Mã QR định danh</h3>
-             
-             <div className="relative mx-auto w-64 h-64 bg-white p-8 rounded-3xl border border-blue-50 flex items-center justify-center">
-                {/* Decorative corners from image */}
-                <div className="absolute top-4 left-4 w-10 h-10 border-t-2 border-l-2 border-orange-200 rounded-tl-xl" />
-                <div className="absolute top-4 right-4 w-10 h-10 border-t-2 border-r-2 border-orange-200 rounded-tr-xl" />
-                <div className="absolute bottom-4 left-4 w-10 h-10 border-b-2 border-l-2 border-orange-200 rounded-bl-xl" />
-                <div className="absolute bottom-4 right-4 w-10 h-10 border-b-2 border-r-2 border-orange-200 rounded-br-xl" />
+          {/* Redesigned QR Display Section (More compact/Modern) */}
+          <div className="bg-[#f0f9ff] rounded-3xl p-5 border border-blue-100 shadow-sm flex items-center gap-6">
+             <div className="relative flex-shrink-0 w-28 h-28 bg-white p-3 rounded-2xl border border-blue-50 flex items-center justify-center group overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                {/* Modern subtle corners */}
+                <div className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-primary/20 rounded-tl-md" />
+                <div className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2 border-primary/20 rounded-br-md" />
                 
-                <div className="w-full h-full p-2 grayscale opacity-90">
-                   <QrCode className="w-full h-full text-gray-800" />
+                <div className="relative w-full h-full p-0.5 opacity-90 transition-transform group-hover:scale-110">
+                   <QrCode className="w-full h-full text-blue-950" strokeWidth={1} />
                 </div>
              </div>
              
-             <p className="mt-8 text-sm font-bold text-gray-400 leading-relaxed max-w-[280px] mx-auto">
-                Sử dụng mã này để quét tại các cổng kiểm soát giáo phận hoặc xác thực quyền hành lễ.
-             </p>
+             <div className="flex-1 text-left space-y-1.5">
+                <h3 className="text-lg font-display font-black text-blue-600 leading-tight">Mã QR định danh</h3>
+                <p className="text-[10px] font-bold text-gray-400 leading-relaxed">
+                   Quét mã để xác thực quyền hành lễ hoặc điểm danh sự kiện giáo phận.
+                </p>
+                <div className="flex items-center gap-2 mt-2">
+                   <div className="px-2.5 py-0.5 bg-blue-100/50 rounded-full text-[9px] font-black text-blue-600 uppercase tracking-widest border border-blue-100">
+                      Đã mã hóa
+                   </div>
+                   <div className="px-2.5 py-0.5 bg-emerald-100/50 rounded-full text-[9px] font-black text-emerald-600 uppercase tracking-widest border border-emerald-100">
+                      Hợp lệ
+                   </div>
+                </div>
+             </div>
           </div>
 
           {/* Timeline Section */}
-          <section className="space-y-4 pt-2">
+          <section className="space-y-3">
              <div className="flex items-center gap-2 px-1">
                 <History className="w-4 h-4 text-gray-500" />
                 <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">LỊCH SỬ CÔNG TÁC</h4>
              </div>
-             <div className="bg-white rounded-[32px] p-8 shadow-sm border border-gray-50">
-                <div className="space-y-10 relative">
+             <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-50">
+                <div className="space-y-8 relative">
                    <div className="absolute left-[7px] top-2 bottom-6 w-[2px] bg-gray-50" />
                    
                    <div className="relative pl-8">
@@ -654,41 +1296,99 @@ const ProfileScreen = ({ onBack, isAdminView = false }: { onBack: () => void, is
 
 const ScanScreen = ({ onClose }: { onClose: () => void }) => {
   return (
-    <div className="fixed inset-0 bg-black z-[60] flex flex-col h-screen overflow-hidden">
-       <header className="flex justify-between items-center p-6 bg-transparent text-white z-10">
-          <button onClick={onClose} className="p-2 text-white">
+    <div className="absolute inset-0 bg-white z-[60] flex flex-col h-full overflow-hidden">
+       {/* High-end Header */}
+       <header className="flex items-center px-4 py-3 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100/50">
+          <button onClick={onClose} className="p-2 text-primary hover:bg-primary/5 rounded-full active:scale-95 transition-all">
              <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-xl font-display font-black text-white">Digital Ecclesia</h1>
-          <Bell className="w-6 h-6" />
+          <div className="flex-1 text-center pr-10">
+             <h1 className="text-xl font-display font-black text-gray-800 tracking-tight">Quét mã QR</h1>
+          </div>
        </header>
 
-       <div className="flex-grow flex flex-col items-center justify-center p-6 relative">
-          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBM9wcX763jjAJLFLB6K3UBguIYziLeiCEtQm4AIigbMybNsaMW7Fn_HWszNr4gSpUaAcM14O8o7OqV1DHEQNO0J8K7m0IGpvaUw_oCUZziRh-Gmrg4BRk8_qb0-8S0cZGWL-Ek2Y5bYlWPtuTfrocH_ZrgxiV5it0UmzjeqKg1qwsQN9GMlSZix0_VocSMFUMJbkyzWivj1UnBbNROoOnafaSSMKtrxY-YoBvR2yXB3WlORBXet7eEVe5CTIwqoBgFzmFfvpyQffgy" className="absolute inset-0 w-full h-full object-cover opacity-60" />
+       <div className="flex-1 relative flex flex-col items-center justify-center p-6 bg-slate-900">
+          {/* Simulated Camera View with realistic texture */}
+          <div className="absolute inset-0 w-full h-full overflow-hidden">
+            <img 
+              src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=2070" 
+              className="w-full h-full object-cover scale-110 opacity-40 mix-blend-overlay grayscale" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-transparent to-slate-900/80" />
+            
+            {/* Added dynamic light leak effect for "brightness" */}
+            <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/20 blur-[100px] rounded-full" />
+            <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-400/10 blur-[100px] rounded-full" />
+          </div>
           
-          <div className="relative w-64 h-64 md:w-80 md:h-80 z-10" style={{ boxShadow: '0 0 0 4000px rgba(0,0,0,0.45)' }}>
-             <div className="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 border-primary rounded-tl-2xl shadow-[0_0_20px_rgba(37,99,235,0.5)]" />
-             <div className="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-primary rounded-tr-2xl shadow-[0_0_20px_rgba(37,99,235,0.5)]" />
-             <div className="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-primary rounded-bl-2xl shadow-[0_0_20px_rgba(37,99,235,0.5)]" />
-             <div className="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-primary rounded-br-2xl shadow-[0_0_20px_rgba(37,99,235,0.5)]" />
+          {/* Main Scanner Window */}
+          <div className="relative group">
+             {/* Scanning glow effect around the box */}
+             <div className="absolute -inset-8 bg-primary/10 blur-[50px] opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
              
-             <motion.div 
-              animate={{ top: ['10%', '90%', '10%'] }} 
-              transition={{ duration: 3, repeat: Infinity }}
-              className="absolute left-4 right-4 h-0.5 bg-primary/80 shadow-[0_0_10px_rgba(37,99,235,1)]"
-             />
+             <div className="relative w-64 h-64 md:w-80 md:h-80 z-10 transition-transform group-hover:scale-[1.02] duration-500">
+                {/* Corner Accents - Premium Version with more rounded corners */}
+                <div className="absolute -top-2 -left-2 w-16 h-16 border-t-[6px] border-l-[6px] border-primary rounded-tl-[36px] shadow-[0_0_20px_rgba(37,99,235,0.6)]" />
+                <div className="absolute -top-2 -right-2 w-16 h-16 border-t-[6px] border-r-[6px] border-primary rounded-tr-[36px] shadow-[0_0_20px_rgba(37,99,235,0.6)]" />
+                <div className="absolute -bottom-2 -left-2 w-16 h-16 border-b-[6px] border-l-[6px] border-primary rounded-bl-[36px] shadow-[0_0_20px_rgba(37,99,235,0.6)]" />
+                <div className="absolute -bottom-2 -right-2 w-16 h-16 border-b-[6px] border-r-[6px] border-primary rounded-br-[36px] shadow-[0_0_20px_rgba(37,99,235,0.6)]" />
+                
+                {/* Internal Scan Area - Glass overlay feel */}
+                <div className="absolute inset-0 bg-white/5 backdrop-blur-[2px] border border-white/20 rounded-[30px] overflow-hidden">
+                   {/* Scanning Line - High velocity modern feel */}
+                   <motion.div 
+                     animate={{ top: ['0%', '100%', '0%'] }} 
+                     transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                     className="absolute left-0 right-0 h-[4px] bg-gradient-to-r from-transparent via-primary to-transparent z-20 shadow-[0_0_25px_rgba(37,99,235,1)]"
+                   />
+                   
+                   {/* Scan overlay grid */}
+                   <div className="absolute inset-0 opacity-[0.1] pointer-events-none" 
+                        style={{ backgroundImage: 'radial-gradient(circle, #2563eb 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+                </div>
+             </div>
           </div>
           
-          <p className="text-white font-bold mt-12 z-10 drop-shadow-md text-center max-w-xs leading-relaxed">Căn chỉnh mã QR vào trong khung để quét</p>
+          {/* Instructions with premium label styling */}
+          <div className="mt-16 relative z-20 flex flex-col items-center gap-6">
+             <div className="px-10 py-3.5 bg-white/10 backdrop-blur-2xl rounded-full border border-white/20 shadow-2xl flex items-center gap-3">
+                <span className="relative flex h-3 w-3">
+                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                   <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                </span>
+                <p className="text-[15px] font-black text-white tracking-wide uppercase">
+                   Đang quét mã QR
+                </p>
+             </div>
+             
+             <div className="bg-black/20 backdrop-blur-md px-6 py-2 rounded-2xl border border-white/5">
+                <p className="text-white/60 text-xs font-bold text-center italic tracking-wider">
+                   Căn chỉnh mã vào trong khung để nhận diện
+                </p>
+             </div>
+          </div>
           
-          <div className="mt-12 flex gap-8 z-10">
-             <button className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/20">
-                <Flashlight className="w-7 h-7 fill-white/10" />
+          {/* Interactive Controls - Floating glass clusters */}
+          <div className="absolute bottom-12 flex items-center gap-10 z-30">
+             <button className="group flex flex-col items-center gap-3 active:scale-90 transition-all">
+                <div className="w-16 h-16 bg-white/10 hover:bg-white/20 backdrop-blur-3xl rounded-full flex items-center justify-center text-white border border-white/20 shadow-2xl transition-all duration-300">
+                   <Flashlight className="w-7 h-7 group-hover:text-primary transition-colors" />
+                </div>
+                <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">Đèn pin</span>
              </button>
-             <button className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/20">
-                <ImageIcon className="w-7 h-7 fill-white/10" />
+             
+             <button className="group flex flex-col items-center gap-3 active:scale-90 transition-all">
+                <div className="w-16 h-16 bg-white/10 hover:bg-white/20 backdrop-blur-3xl rounded-full flex items-center justify-center text-white border border-white/20 shadow-2xl transition-all duration-300">
+                   <ImageIcon className="w-7 h-7 group-hover:text-primary transition-colors" />
+                </div>
+                <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">Tải ảnh lên</span>
              </button>
           </div>
+       </div>
+
+       {/* Safe area floor - ensures it feels connected to the bottom nav but integrated */}
+       <div className="h-16 bg-slate-900 border-t border-white/5 flex items-center justify-center px-6 shrink-0">
+          <div className="w-24 h-1.5 bg-white/10 rounded-full" />
        </div>
     </div>
   );
@@ -696,43 +1396,64 @@ const ScanScreen = ({ onClose }: { onClose: () => void }) => {
 
 const NFCScreen = ({ onCancel }: { onCancel: () => void }) => {
   return (
-    <div className="fixed inset-0 bg-white z-[60] flex flex-col h-screen p-8 pt-24 overflow-hidden items-center text-center">
-       {/* Ambient Ripples */}
-       {[1, 2, 3].map(i => (
-         <motion.div
-           key={i}
-           animate={{ scale: [0.8, 1.5], opacity: [0.3, 0] }}
-           transition={{ duration: 4, repeat: Infinity, delay: i * 1.3 }}
-           className="absolute w-[400px] h-[400px] border border-primary/20 rounded-full"
-         />
-       ))}
-
-       <div className="relative z-10 flex flex-col items-center justify-center flex-grow mb-24">
-          <div className="relative mb-12">
-             <div className="w-56 h-56 bg-gray-50 rounded-full shadow-inner flex items-center justify-center">
-                <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center">
-                   <Nfc className="w-12 h-12 text-primary" />
-                </div>
-             </div>
-             <motion.div 
-               animate={{ y: [0, -10, 0], rotate: [12, 10, 12] }} 
-               transition={{ duration: 4, repeat: Infinity }}
-               className="absolute -bottom-4 right-0 w-32 h-20 nfc-gradient rounded-2xl shadow-xl flex items-center justify-center rotate-12 border-2 border-white/20"
-             >
-                <BadgeCheck className="w-10 h-10 text-white fill-white/10" />
-             </motion.div>
-          </div>
-          <h2 className="text-3xl font-display font-extrabold mb-4">Đang quét NFC</h2>
-          <p className="text-gray-400 font-medium max-w-xs leading-relaxed">Vui lòng chạm thẻ linh mục vào vùng cảm biến NFC trên điện thoại</p>
+    <div className="absolute inset-0 bg-white z-[60] flex flex-col h-full overflow-hidden items-center text-center">
+       {/* Ambient Ripples - matched to image style precisely */}
+       <div className="absolute inset-0 flex items-center justify-center -z-10 pointer-events-none">
+          <div className="absolute w-[240px] h-[240px] rounded-full border border-blue-100/40"></div>
+          <div className="absolute w-[380px] h-[380px] rounded-full border border-blue-100/40"></div>
+          <div className="absolute w-[520px] h-[520px] rounded-full border border-blue-100/40"></div>
+          <div className="absolute w-[660px] h-[660px] rounded-full border border-blue-50/30"></div>
+          <div className="absolute w-[800px] h-[800px] rounded-full border border-blue-50/20"></div>
        </div>
 
-       <button 
-        onClick={onCancel}
-        className="w-full bg-white border border-gray-100 py-4.5 rounded-2xl font-bold text-gray-500 flex items-center justify-center gap-3 relative z-10 shadow-sm"
-       >
-          <X className="w-5 h-5" />
-          Hủy
-       </button>
+       <div className="flex-grow flex flex-col items-center justify-center w-full max-w-md mx-auto">
+          {/* Scanner Visual Container */}
+          <div className="relative mb-12">
+             {/* Big Light Circle */}
+             <div className="w-52 h-52 bg-[#e9ebf2] rounded-full flex items-center justify-center shadow-lg shadow-gray-100/50">
+                {/* Blue Inner Circle with Waves - Matched closer to image */}
+                <div className="w-24 h-24 bg-[#004ac6] rounded-full flex items-center justify-center border-4 border-white shadow-xl">
+                   <div className="rotate-0">
+                      <Rss className="w-12 h-12 text-white rotate-[135deg]" strokeWidth={2.5} />
+                   </div>
+                </div>
+             </div>
+             
+             {/* Floating Card Mockup - matched to image precisely */}
+             <motion.div 
+               initial={{ x: 20, y: 0, rotate: 12 }}
+               animate={{ y: [0, -8, 0], rotate: [12, 10, 12] }}
+               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+               className="absolute bottom-2 -right-2 w-32 h-[84px] bg-gradient-to-br from-[#1b5ed8] to-[#04aedc] rounded-xl shadow-2xl flex items-center justify-center border border-white/20"
+             >
+                <div className="flex flex-col items-center gap-1.5">
+                   <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/20">
+                      <Contact className="w-7 h-7 text-white" />
+                   </div>
+                   <div className="w-12 h-0.5 bg-white/20 rounded-full" />
+                </div>
+             </motion.div>
+          </div>
+
+          {/* Instruction Text - matched typography */}
+          <div className="space-y-4 px-6">
+             <h2 className="text-[28px] font-display font-black text-[#1a1c24] tracking-tight">Đang quét NFC</h2>
+             <p className="text-base font-bold text-gray-400 max-w-[300px] mx-auto leading-relaxed">
+                Vui lòng chạm thẻ linh mục vào vùng cảm biến NFC trên điện thoại
+             </p>
+          </div>
+       </div>
+
+       {/* Bottom Action - matched to image outlined style */}
+       <div className="w-full px-6 pb-12">
+          <button 
+            onClick={onCancel}
+            className="w-full h-16 flex items-center justify-center rounded-xl border-2 border-[#d9dae5] text-[#444654] font-black text-sm active:bg-gray-50 transition-all gap-2"
+          >
+             <X className="w-5 h-5" strokeWidth={3} />
+             Hủy
+          </button>
+       </div>
     </div>
   );
 };
@@ -741,7 +1462,7 @@ const NFCScreen = ({ onCancel }: { onCancel: () => void }) => {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
-  const [currentScreen, setCurrentScreen] = useState<'home' | 'profile' | 'scan' | 'nfc' | 'login' | 'priest-dashboard' | 'priest-profile'>('home');
+  const [currentScreen, setCurrentScreen] = useState<'home' | 'profile' | 'scan' | 'nfc' | 'login' | 'priest-dashboard' | 'priest-profile' | 'mass-request' | 'mass-request-detail' | 'history' | 'settings' | 'search-detail' | 'notifications'>('home');
   const [userRole, setUserRole] = useState<'public' | 'priest'>('public');
 
   const renderScreen = () => {
@@ -756,6 +1477,12 @@ export default function App() {
       case 'priest-profile': return <ProfileScreen onBack={() => setCurrentScreen('priest-dashboard')} isAdminView={true} />;
       case 'scan': return <ScanScreen onClose={() => handleTabChange('home')} />;
       case 'nfc': return <NFCScreen onCancel={() => handleTabChange('home')} />;
+      case 'mass-request': return <MassRequestScreen onBack={() => setCurrentScreen(userRole === 'priest' ? 'priest-dashboard' : 'profile')} />;
+      case 'mass-request-detail': return <MassRequestDetailScreen onBack={() => setCurrentScreen('priest-dashboard')} />;
+      case 'history': return <HistoryScreen />;
+      case 'settings': return <SettingsScreen onBellClick={() => setCurrentScreen('notifications')} />;
+      case 'search-detail': return <SearchDetailScreen onBack={() => setCurrentScreen('priest-dashboard')} />;
+      case 'notifications': return <NotificationsScreen onBack={() => setCurrentScreen(userRole === 'priest' ? 'priest-dashboard' : 'settings')} />;
       case 'login': return (
         <LoginScreen 
           onLogin={() => { setUserRole('priest'); setCurrentScreen('priest-dashboard'); setActiveTab('home'); }} 
@@ -766,6 +1493,12 @@ export default function App() {
         <PriestHomeScreen 
           onLogout={() => { setUserRole('public'); setCurrentScreen('home'); setActiveTab('home'); }} 
           onProfileClick={() => setCurrentScreen('priest-profile')}
+          onMassRequestClick={() => setCurrentScreen('mass-request')}
+          onNfcClick={() => setCurrentScreen('nfc')}
+          onNotificationClick={() => setCurrentScreen('mass-request-detail')}
+          onScanClick={() => setCurrentScreen('scan')}
+          onSearchClick={() => setCurrentScreen('search-detail')}
+          onBellClick={() => setCurrentScreen('notifications')}
         />
       );
       default: return <LaymanHomeScreen onPriestClick={() => setCurrentScreen('profile')} onLoginClick={() => setCurrentScreen('login')} />;
@@ -777,7 +1510,8 @@ export default function App() {
     if (tab === 'home') setCurrentScreen(userRole === 'priest' ? 'priest-dashboard' : 'home');
     if (tab === 'scan') setCurrentScreen('scan');
     if (tab === 'nfc') setCurrentScreen('nfc');
-    // history and settings could be dummy screens if needed
+    if (tab === 'history') setCurrentScreen('history');
+    if (tab === 'settings') setCurrentScreen('settings');
   };
 
   return (
