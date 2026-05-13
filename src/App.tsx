@@ -336,7 +336,7 @@ const LoginScreen = ({ onLogin, onBack }: { onLogin: () => void, onBack: () => v
   );
 };
 
-const PriestHomeScreen = ({ onLogout, onProfileClick, onMassRequestClick, onNfcClick, onNotificationClick, onScanClick, onSearchClick, onBellClick }: { onLogout: () => void, onProfileClick: () => void, onMassRequestClick: () => void, onNfcClick: () => void, onNotificationClick: () => void, onScanClick: () => void, onSearchClick: () => void, onBellClick: () => void }) => {
+const PriestHomeScreen = ({ onLogout, onProfileClick, onMassRequestClick, onNfcClick, onNotificationClick, onScanClick, onSearchClick, onBellClick, onHelpClick }: { onLogout: () => void, onProfileClick: () => void, onMassRequestClick: () => void, onNfcClick: () => void, onNotificationClick: () => void, onScanClick: () => void, onSearchClick: () => void, onBellClick: () => void, onHelpClick: () => void }) => {
   return (
     <div className="flex flex-col gap-5 p-4 pb-32 bg-[#f8faff]">
       {/* Header */}
@@ -465,8 +465,8 @@ const PriestHomeScreen = ({ onLogout, onProfileClick, onMassRequestClick, onNfcC
       </div>
 
       {/* Help Link */}
-      <button className="flex items-center justify-center gap-2 py-4 text-primary font-bold text-sm opacity-60 hover:opacity-100 transition-opacity">
-         <InfoIcon className="w-4 h-4" />
+      <button onClick={onHelpClick} className="flex items-center justify-center gap-2 py-4 text-primary font-bold text-sm opacity-60 hover:opacity-100 transition-opacity">
+         <HelpCircle className="w-4 h-4" />
          Hướng dẫn sử dụng Căn cước Linh mục
       </button>
     </div>
@@ -760,6 +760,93 @@ const NotificationsScreen = ({ onBack }: { onBack: () => void }) => {
                    </div>
                 </div>
              ))}
+          </div>
+       </div>
+    </div>
+  );
+};
+
+const PriestHelpScreen = ({ onBack }: { onBack: () => void }) => {
+  const helpItems = [
+    {
+      icon: Nfc,
+      title: 'Xác thực NFC',
+      description: 'Công nghệ bảo mật cao nhất bằng cách chạm thẻ linh mục vào mặt sau điện thoại để xác thực danh tính chính thức.',
+      color: 'bg-orange-50 text-orange-600'
+    },
+    {
+      icon: QrCode,
+      title: 'Mã QR Định danh',
+      description: 'Mỗi linh mục có một mã QR riêng. Quét mã để chia sẻ thông tin liên lạc nhanh chóng hoặc điểm danh tại các sự kiện giáo hội.',
+      color: 'bg-fuchsia-50 text-fuchsia-600'
+    },
+    {
+      icon: Clock,
+      title: 'Quản lý Xin lễ',
+      description: 'Gửi yêu cầu dâng lễ trực tuyến đến văn phòng giáo phận hoặc nhận và duyệt các yêu cầu dâng lễ từ giáo dân gửi đến.',
+      color: 'bg-indigo-50 text-indigo-600'
+    },
+    {
+      icon: Bell,
+      title: 'Hệ thống Thông báo',
+      description: 'Luôn cập nhật các thông báo khẩn, nhắc lịch công tác và tin tức quan trọng từ Giáo phận thông qua trung tâm thông báo.',
+      color: 'bg-blue-50 text-blue-600'
+    },
+    {
+      icon: Search,
+      title: 'Tìm kiếm Linh mục',
+      description: 'Dễ dàng tra cứu thông tin liên lạc và chức vụ của các linh mục trong hệ thống Digital Ecclesia toàn quốc.',
+      color: 'bg-slate-50 text-slate-600'
+    },
+    {
+      icon: Fingerprint,
+      title: 'Bảo mật Sinh trắc học',
+      description: 'Sử dụng FaceID hoặc Fingerprint để bảo vệ ứng dụng, đảm bảo chỉ chính chủ mới có thể truy cập thông tin nhạy cảm.',
+      color: 'bg-emerald-50 text-emerald-600'
+    }
+  ];
+
+  return (
+    <div className="flex flex-col min-h-full bg-[#f8faff] pb-32">
+       <header className="flex justify-between items-center px-4 py-3 sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100">
+          <button onClick={onBack} className="p-2 text-primary">
+             <ArrowLeft className="w-6 h-6" />
+          </button>
+          <div className="flex-1 text-center pr-10">
+             <h1 className="text-xl font-display font-black text-primary tracking-tight">Hướng dẫn sử dụng</h1>
+          </div>
+       </header>
+
+       <div className="p-5 space-y-6">
+          <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-50">
+             <h3 className="text-lg font-black text-gray-800 mb-2">Chào mừng Linh mục,</h3>
+             <p className="text-sm text-gray-500 font-medium leading-relaxed">
+                Hệ thống Căn cước Linh mục kỹ thuật số giúp việc quản lý mục vụ và kết nối trong giáo hội trở nên thuận tiện và bảo mật hơn bao giờ hết.
+             </p>
+          </div>
+
+          <div className="grid gap-4">
+             {helpItems.map((item, idx) => (
+                <div key={idx} className="bg-white rounded-[28px] p-5 shadow-sm border border-gray-50 flex items-start gap-4">
+                   <div className={`w-12 h-12 rounded-2xl shrink-0 flex items-center justify-center ${item.color}`}>
+                      <item.icon className="w-6 h-6" />
+                   </div>
+                   <div>
+                      <h4 className="text-sm font-black text-gray-800 mb-1">{item.title}</h4>
+                      <p className="text-xs text-gray-500 font-medium leading-relaxed">{item.description}</p>
+                   </div>
+                </div>
+             ))}
+          </div>
+
+          <div className="bg-primary/5 rounded-[32px] p-6 border border-primary/10">
+             <h4 className="text-xs font-black text-primary uppercase tracking-widest mb-2">Cần hỗ trợ thêm?</h4>
+             <p className="text-xs text-gray-600 font-medium leading-relaxed mb-4">
+                Nếu vị cần được hướng dẫn trực tiếp hoặc gặp sự cố kỹ thuật, vui lòng liên hệ Ban Truyền thông Giáo phận.
+             </p>
+             <button className="w-full bg-primary text-white py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/20">
+                GỬI YÊU CẦU HỖ TRỢ
+             </button>
           </div>
        </div>
     </div>
@@ -1462,7 +1549,7 @@ const NFCScreen = ({ onCancel }: { onCancel: () => void }) => {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
-  const [currentScreen, setCurrentScreen] = useState<'home' | 'profile' | 'scan' | 'nfc' | 'login' | 'priest-dashboard' | 'priest-profile' | 'mass-request' | 'mass-request-detail' | 'history' | 'settings' | 'search-detail' | 'notifications'>('home');
+  const [currentScreen, setCurrentScreen] = useState<'home' | 'profile' | 'scan' | 'nfc' | 'login' | 'priest-dashboard' | 'priest-profile' | 'mass-request' | 'mass-request-detail' | 'history' | 'settings' | 'search-detail' | 'notifications' | 'priest-help'>('home');
   const [userRole, setUserRole] = useState<'public' | 'priest'>('public');
 
   const renderScreen = () => {
@@ -1483,6 +1570,7 @@ export default function App() {
       case 'settings': return <SettingsScreen onBellClick={() => setCurrentScreen('notifications')} />;
       case 'search-detail': return <SearchDetailScreen onBack={() => setCurrentScreen('priest-dashboard')} />;
       case 'notifications': return <NotificationsScreen onBack={() => setCurrentScreen(userRole === 'priest' ? 'priest-dashboard' : 'settings')} />;
+      case 'priest-help': return <PriestHelpScreen onBack={() => setCurrentScreen('priest-dashboard')} />;
       case 'login': return (
         <LoginScreen 
           onLogin={() => { setUserRole('priest'); setCurrentScreen('priest-dashboard'); setActiveTab('home'); }} 
@@ -1499,6 +1587,7 @@ export default function App() {
           onScanClick={() => setCurrentScreen('scan')}
           onSearchClick={() => setCurrentScreen('search-detail')}
           onBellClick={() => setCurrentScreen('notifications')}
+          onHelpClick={() => setCurrentScreen('priest-help')}
         />
       );
       default: return <LaymanHomeScreen onPriestClick={() => setCurrentScreen('profile')} onLoginClick={() => setCurrentScreen('login')} />;
